@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User, Activity, Skull, Coins, Zap, Backpack } from 'lucide-react';
-import { config } from '../config';
+
 import { Modal } from '../components/Modal';
 
 interface ProfileTabProps {
@@ -8,9 +8,10 @@ interface ProfileTabProps {
   firstName: string;
   isDarkMode: boolean;
   apiCall: (action: string, payload?: any) => void;
+  config?: any;
 }
 
-export function ProfileTab({ username, firstName, isDarkMode, apiCall }: ProfileTabProps) {
+export function ProfileTab({ username, firstName, isDarkMode, apiCall, config }: ProfileTabProps) {
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isInjecting, setIsInjecting] = useState(false);

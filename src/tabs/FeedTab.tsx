@@ -1,10 +1,9 @@
-import { config } from '../config';
-
 interface FeedTabProps {
   isDarkMode: boolean;
+  config?: any;
 }
 
-export function FeedTab({ isDarkMode }: FeedTabProps) {
+export function FeedTab({ isDarkMode, config }: FeedTabProps) {
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex items-center gap-3 mb-2 shrink-0">

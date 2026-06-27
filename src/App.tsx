@@ -55,7 +55,15 @@ export default function App() {
     setTimeout(() => setToastVisible(false), 2500);
   };
 
-  const [tick, setTick] = useState(0);
+  const [userData, setUserData] = useState({
+    stats: config.stats,
+    backpack: config.backpack,
+    users: config.users,
+    logs: config.logs || [],
+    shopCategories: config.shopCategories,
+    shopItems: config.shopItems,
+    jobs: config.jobs
+  });
 
   const API_URL = import.meta.env.VITE_API_URL || (window.location.port === '5173' ? 'http://localhost:8000' : window.location.origin);
 
@@ -68,24 +76,26 @@ export default function App() {
       const res = await fetch(`${API_URL}/api/user?tg_id=${tg_id}&username=${username}`);
       const data = await res.json();
       
-      if (data.stats) config.stats = data.stats;
-      if (data.backpack) config.backpack = data.backpack;
-      if (data.users) config.users = data.users;
-      
       const configRes = await fetch(`${API_URL}/api/config`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       const configData = await configRes.json();
-      if (configData.shopCategories) config.shopCategories = configData.shopCategories;
-      if (configData.shopItems) config.shopItems = configData.shopItems;
-      if (configData.jobs) config.jobs = configData.jobs;
       
       const feedRes = await fetch(`${API_URL}/api/feed`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       const feedData = await feedRes.json();
-      if (feedData.logs) config.logs = feedData.logs;
       
-      setTick(t => t + 1);
+      setUserData(prev => ({
+        ...prev,
+        stats: data.stats || prev.stats,
+        backpack: data.backpack || prev.backpack,
+        users: data.users || prev.users,
+        shopCategories: configData.shopCategories || prev.shopCategories,
+        shopItems: configData.shopItems || prev.shopItems,
+        jobs: configData.jobs || prev.jobs,
+        logs: feedData.logs || prev.logs
+      }));
+      
     } catch (e: any) {
       console.error(e);
-      alert("Error in fetchUserData: " + e.message);
+      alert("Ошибка при загрузке данных: " + e.message);
     }
   };
 
@@ -165,11 +175,11 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
-            {activeTab === 0 && <ProfileTab username={username} firstName={firstName} isDarkMode={isDarkMode} apiCall={apiCall} />}
-            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} />}
-            {activeTab === 2 && <CombatTab apiCall={apiCall} isDarkMode={isDarkMode} />}
-            {activeTab === 3 && <MarketTab apiCall={apiCall} isDarkMode={isDarkMode} />}
-            {activeTab === 4 && <FeedTab isDarkMode={isDarkMode} />}
+            {activeTab === 0 && <ProfileTab username={username} firstName={firstName} isDarkMode={isDarkMode} apiCall={apiCall} config={userData} />}
+            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
+            {activeTab === 2 && <CombatTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
+            {activeTab === 3 && <MarketTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
+            {activeTab === 4 && <FeedTab isDarkMode={isDarkMode} config={userData} />}
           </motion.div>
         </AnimatePresence>
       </main>

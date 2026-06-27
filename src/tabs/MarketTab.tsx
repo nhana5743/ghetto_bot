@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { config } from '../config';
+
 import { ShoppingCart, ChevronLeft } from 'lucide-react';
 
 interface MarketTabProps {
   apiCall: (action: string, payload?: any) => void;
   isDarkMode: boolean;
+  config?: any;
 }
 
-export function MarketTab({ apiCall, isDarkMode }: MarketTabProps) {
+export function MarketTab({ apiCall, isDarkMode, config }: MarketTabProps) {
   const [activeCategory, setActiveCategory] = useState<any>(null);
 
   const gradients = [

@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
-import { config } from '../config';
+
 import { Swords, Dumbbell } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
 interface CombatTabProps {
   apiCall: (action: string, payload?: any) => void;
   isDarkMode: boolean;
+  config?: any;
 }
 
-export function CombatTab({ apiCall, isDarkMode }: CombatTabProps) {
+export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
   const [fightTarget, setFightTarget] = useState(config.users[0]);
+
+  useEffect(() => {
+    if (config.users && config.users.length > 0) {
+      if (!config.users.includes(fightTarget)) setFightTarget(config.users[0]);
+    }
+  }, [config.users]);
+
   const [fightModalOpen, setFightModalOpen] = useState(false);
   const [isTrainModalOpen, setIsTrainModalOpen] = useState(false);
   const [trainCooldown, setTrainCooldown] = useState(0);

@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
-import { config } from '../config';
+
 import { Briefcase, Dice5, Send, HandMetal, ChevronLeft } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
 interface FinancesTabProps {
   apiCall: (action: string, payload?: any) => void;
   isDarkMode: boolean;
+  config?: any;
 }
 
-export function FinancesTab({ apiCall, isDarkMode }: FinancesTabProps) {
+export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
   const [betAmount, setBetAmount] = useState('');
   const [robTarget, setRobTarget] = useState(config.users[0]);
   const [transferTarget, setTransferTarget] = useState(config.users[0]);
+
+  useEffect(() => {
+    if (config.users && config.users.length > 0) {
+      if (!config.users.includes(robTarget)) setRobTarget(config.users[0]);
+      if (!config.users.includes(transferTarget)) setTransferTarget(config.users[0]);
+    }
+  }, [config.users]);
+
   const [transferAmount, setTransferAmount] = useState('');
 
   const [activeView, setActiveView] = useState<'main' | 'jobs' | 'job_detail'>('main');
