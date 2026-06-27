@@ -4,7 +4,7 @@ import { Swords, Dumbbell } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
 interface CombatTabProps {
-  apiCall: (action: string, payload?: any) => void;
+  apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
   config?: any;
 }

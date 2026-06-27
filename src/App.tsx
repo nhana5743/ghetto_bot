@@ -9,6 +9,7 @@ import { FeedTab } from './tabs/FeedTab';
 import { Toast } from './components/Toast';
 import { Modal } from './components/Modal';
 import { DevPanel } from './DevPanel';
+import { config } from './config';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(0);

@@ -4,7 +4,7 @@ import { Briefcase, Dice5, Send, HandMetal, ChevronLeft } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
 interface FinancesTabProps {
-  apiCall: (action: string, payload?: any) => void;
+  apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
   config?: any;
 }

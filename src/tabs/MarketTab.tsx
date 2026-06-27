@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ShoppingCart, ChevronLeft } from 'lucide-react';
 
 interface MarketTabProps {
-  apiCall: (action: string, payload?: any) => void;
+  apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
   config?: any;
 }

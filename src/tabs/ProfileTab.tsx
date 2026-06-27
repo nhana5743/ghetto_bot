@@ -7,7 +7,7 @@ interface ProfileTabProps {
   username: string;
   firstName: string;
   isDarkMode: boolean;
-  apiCall: (action: string, payload?: any) => void;
+  apiCall: (action: string, payload?: any) => Promise<any>;
   config?: any;
 }
 
