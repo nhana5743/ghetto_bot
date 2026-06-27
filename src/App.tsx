@@ -83,8 +83,9 @@ export default function App() {
       if (feedData.logs) config.logs = feedData.logs;
       
       setTick(t => t + 1);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert("Error in fetchUserData: " + e.message);
     }
   };
 
