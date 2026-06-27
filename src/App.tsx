@@ -72,13 +72,13 @@ export default function App() {
       if (data.backpack) config.backpack = data.backpack;
       if (data.users) config.users = data.users;
       
-      const configRes = await fetch(`${API_URL}/api/config`);
+      const configRes = await fetch(`${API_URL}/api/config`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       const configData = await configRes.json();
       if (configData.shopCategories) config.shopCategories = configData.shopCategories;
       if (configData.shopItems) config.shopItems = configData.shopItems;
       if (configData.jobs) config.jobs = configData.jobs;
       
-      const feedRes = await fetch(`${API_URL}/api/feed`);
+      const feedRes = await fetch(`${API_URL}/api/feed`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       const feedData = await feedRes.json();
       if (feedData.logs) config.logs = feedData.logs;
       
@@ -100,7 +100,7 @@ export default function App() {
 
       const res = await fetch(`${API_URL}/api/action`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
         body: JSON.stringify({ tg_id, username, action, payload: payload || {} })
       });
       const data = await res.json();
