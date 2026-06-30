@@ -27,7 +27,8 @@ export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, c
   const handlePlayerClick = async (player: string) => {
     setIsFetchingStats(true);
     try {
-      const res = await fetch(`${window.location.origin}/api/user_stats?username=${player.replace('@', '')}`);
+      const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
+      const res = await fetch(`${API_URL}/api/user_stats?username=${player.replace('@', '')}`);
       if (res.ok) {
         const data = await res.json();
         setSelectedPlayerStats({...data.stats, username: player});
