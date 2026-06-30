@@ -9,19 +9,19 @@ interface ProfileTabProps {
   isDarkMode: boolean;
   apiCall: (action: string, payload?: any) => Promise<any>;
   config?: any;
+  avatar?: string;
 }
 
-export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, config }: ProfileTabProps & { avatar?: string }) {
+export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, config }: ProfileTabProps) {
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isInjecting, setIsInjecting] = useState(false);
   const [targetUsername, setTargetUsername] = useState('');
   const [isDiseaseModalOpen, setIsDiseaseModalOpen] = useState(false);
-  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [isPlayersModalOpen, setIsPlayersModalOpen] = useState(false);
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [selectedPlayerStats, setSelectedPlayerStats] = useState<any>(null);
   const [isFetchingStats, setIsFetchingStats] = useState(false);
-
   const [isInjectConfirmationOpen, setIsInjectConfirmationOpen] = useState(false);
 
   const handlePlayerClick = async (player: string) => {
@@ -80,6 +80,72 @@ export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, c
         </div>
       </button>
 
+      {/* Addiction Card - CURRENT PLAYER */}
+      <div className={`rounded-[1.5rem] p-5 flex flex-col gap-3 transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}>
+        <div className="flex items-center gap-2 text-gray-500">
+          <Activity className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+          <span className="text-[14px] font-semibold">Жажда дозы</span>
+        </div>
+        {config.stats.addiction === 0 ? (
+          <span className={`text-[18px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>0%</span>
+        ) : (
+          <div className="flex flex-col gap-2 mt-1">
+            <div className="flex justify-between items-center">
+              <span className={`text-[15px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Жажда дозы</span>
+              <span className={`text-[15px] font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{config.stats.addiction}%</span>
+            </div>
+            <div className={`w-full h-3.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-[#333333]' : 'bg-gray-200'}`}>
+              <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${config.stats.addiction}%` }}></div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Stats Grid - CURRENT PLAYER */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}>
+          <div className="flex items-center gap-2 text-gray-500">
+            <Coins className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+            <span className="text-[13px] font-semibold">Баланс</span>
+          </div>
+          <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.balance} <span className="text-sm text-gray-400">D</span></span>
+        </div>
+        <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}>
+          <div className="flex items-center gap-2 text-gray-500">
+            <Zap className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+            <span className="text-[13px] font-semibold">Ловкость</span>
+          </div>
+          <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.agility}</span>
+        </div>
+        <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}>
+          <div className="flex items-center gap-2 text-gray-500">
+            <Activity className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+            <span className="text-[13px] font-semibold">Сила</span>
+          </div>
+          <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.strength}</span>
+        </div>
+        {config.stats.disease !== 'Чист' ? (
+          <button 
+            onClick={() => setIsDiseaseModalOpen(true)}
+            className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors text-left active:scale-[0.98] ${isDarkMode ? 'bg-[#1E1E1E] hover:bg-[#252525]' : 'bg-white hover:bg-gray-50'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}
+          >
+            <div className="flex items-center gap-2 text-gray-500">
+              <Skull className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+              <span className="text-[13px] font-semibold">Зараза</span>
+            </div>
+            <span className={`text-lg font-bold mt-1 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.disease}</span>
+          </button>
+        ) : (
+          <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors text-left ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-[0_4px_20px_rgba(0,0,0,0.03)]`}>
+            <div className="flex items-center gap-2 text-gray-500">
+              <Skull className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+              <span className="text-[13px] font-semibold">Зараза</span>
+            </div>
+            <span className={`text-lg font-bold mt-1 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.disease}</span>
+          </div>
+        )}
+      </div>
+
       <Modal isOpen={isPlayersModalOpen} onClose={() => setIsPlayersModalOpen(false)} title="👥 Игроки Гетто" isDarkMode={isDarkMode}>
         <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1 mt-2">
           {config.users && config.users.length > 0 ? config.users.map((u: string) => (
@@ -98,75 +164,62 @@ export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, c
       </Modal>
 
       <Modal isOpen={isStatsModalOpen} onClose={() => {setIsStatsModalOpen(false); setSelectedPlayerStats(null);}} title={selectedPlayerStats ? `📊 Статы ${selectedPlayerStats.username}` : "📊 Статистика"} isDarkMode={isDarkMode}>
-        <div className="flex flex-col gap-4 mt-2">
-          {/* Addiction Card */}
-          <div className={`rounded-[1.5rem] p-5 flex flex-col gap-3 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
-            <div className="flex items-center gap-2 text-gray-500">
-              <Activity className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-              <span className="text-[14px] font-semibold">Жажда дозы</span>
-            </div>
-            {(selectedPlayerStats ? selectedPlayerStats.addiction : config.stats.addiction) === 0 ? (
-              <span className={`text-[18px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>0%</span>
-            ) : (
-              <div className="flex flex-col gap-2 mt-1">
-                <div className="flex justify-between items-center">
-                  <span className={`text-[15px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Жажда дозы</span>
-                  <span className={`text-[15px] font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{(selectedPlayerStats ? selectedPlayerStats.addiction : config.stats.addiction)}%</span>
-                </div>
-                <div className={`w-full h-3.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-[#333333]' : 'bg-gray-300'}`}>
-                  <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${(selectedPlayerStats ? selectedPlayerStats.addiction : config.stats.addiction)}%` }}></div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
-              <div className="flex items-center gap-2 text-gray-500">
-                <Coins className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-                <span className="text-[13px] font-semibold">Баланс</span>
-              </div>
-              <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{(selectedPlayerStats ? selectedPlayerStats.balance : config.stats.balance)} <span className="text-sm text-gray-400">D</span></span>
-            </div>
-            <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
-              <div className="flex items-center gap-2 text-gray-500">
-                <Zap className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-                <span className="text-[13px] font-semibold">Ловкость</span>
-              </div>
-              <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{(selectedPlayerStats ? selectedPlayerStats.agility : config.stats.agility)}</span>
-            </div>
-            <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
+        {selectedPlayerStats ? (
+          <div className="flex flex-col gap-4 mt-2">
+            <div className={`rounded-[1.5rem] p-5 flex flex-col gap-3 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
               <div className="flex items-center gap-2 text-gray-500">
                 <Activity className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-                <span className="text-[13px] font-semibold">Сила</span>
+                <span className="text-[14px] font-semibold">Жажда дозы</span>
               </div>
-              <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{(selectedPlayerStats ? selectedPlayerStats.strength : config.stats.strength)}</span>
+              {selectedPlayerStats.addiction === 0 ? (
+                <span className={`text-[18px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>0%</span>
+              ) : (
+                <div className="flex flex-col gap-2 mt-1">
+                  <div className="flex justify-between items-center">
+                    <span className={`text-[15px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Жажда дозы</span>
+                    <span className={`text-[15px] font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{selectedPlayerStats.addiction}%</span>
+                  </div>
+                  <div className={`w-full h-3.5 rounded-full overflow-hidden ${isDarkMode ? 'bg-[#333333]' : 'bg-gray-300'}`}>
+                    <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${selectedPlayerStats.addiction}%` }}></div>
+                  </div>
+                </div>
+              )}
             </div>
-            {(!selectedPlayerStats && config.stats.disease !== 'Чист') ? (
-              <button 
-                onClick={() => setIsDiseaseModalOpen(true)}
-                className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors text-left active:scale-[0.98] ${isDarkMode ? 'bg-[#2A2A2A] hover:bg-[#333333]' : 'bg-[#F2F4F5] hover:bg-gray-200'}`}
-              >
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
                 <div className="flex items-center gap-2 text-gray-500">
-                  <Skull className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-                  <span className="text-[13px] font-semibold">Зараза</span>
+                  <Coins className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+                  <span className="text-[13px] font-semibold">Баланс</span>
                 </div>
-                <span className={`text-lg font-bold mt-1 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{config.stats.disease}</span>
-              </button>
-            ) : (
-              <div
-                className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors text-left ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}
-              >
-                <div className="flex items-center gap-2 text-gray-500">
-                  <Skull className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
-                  <span className="text-[13px] font-semibold">Зараза</span>
-                </div>
-                <span className={`text-lg font-bold mt-1 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{(selectedPlayerStats ? selectedPlayerStats.disease : config.stats.disease)}</span>
+                <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedPlayerStats.balance} <span className="text-sm text-gray-400">D</span></span>
               </div>
-            )}
+              <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Zap className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+                  <span className="text-[13px] font-semibold">Ловкость</span>
+                </div>
+                <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedPlayerStats.agility}</span>
+              </div>
+              <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Activity className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+                  <span className="text-[13px] font-semibold">Сила</span>
+                </div>
+                <span className={`text-[22px] font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedPlayerStats.strength}</span>
+              </div>
+              <div className={`p-5 rounded-[1.5rem] flex flex-col gap-2 transition-colors text-left ${isDarkMode ? 'bg-[#2A2A2A]' : 'bg-[#F2F4F5]'}`}>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Skull className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`} />
+                  <span className="text-[13px] font-semibold">Зараза</span>
+                </div>
+                <span className={`text-lg font-bold mt-1 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedPlayerStats.disease}</span>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-4 text-center">Загрузка...</div>
+        )}
       </Modal>
 
       {/* Backpack Button */}
@@ -180,7 +233,7 @@ export function ProfileTab({ username, firstName, avatar, isDarkMode, apiCall, c
 
       <Modal isOpen={isBackpackOpen} onClose={() => setIsBackpackOpen(false)} title="🎒 Рюкзак" isDarkMode={isDarkMode}>
         <div className="flex flex-col gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
-          {config.backpack.map(item => (
+          {config.backpack.map((item: any) => (
             <button 
               key={item.id} 
               onClick={() => handleItemClick(item)}

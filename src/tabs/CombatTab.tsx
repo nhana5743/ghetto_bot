@@ -23,9 +23,10 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
   const [trainCooldown, setTrainCooldown] = useState(0);
 
   useEffect(() => {
-    if (config?.server_time) {
-      const serverTime = config.server_time;
-      const tCd = Math.max(0, 7200 - (serverTime - (config.stats.last_train || 0)));
+    if (config?.stats?.last_train) {
+      const serverTimeOffset = config.server_time ? Math.floor(Date.now()/1000) - config.server_time : 0;
+      const now = Math.floor(Date.now()/1000) - serverTimeOffset;
+      const tCd = Math.max(0, 7200 - (now - config.stats.last_train));
       setTrainCooldown(tCd);
     }
     const timer = setInterval(() => {

@@ -66,7 +66,9 @@ export default function App() {
     logs: config.logs || [],
     shopCategories: config.shopCategories,
     shopItems: config.shopItems,
-    jobs: config.jobs
+    jobs: config.jobs,
+    server_time: Math.floor(Date.now() / 1000),
+    job_timers: {}
   });
 
   const API_URL = import.meta.env.VITE_API_URL || (window.location.port === '5173' ? 'http://localhost:8000' : window.location.origin);
@@ -94,8 +96,10 @@ export default function App() {
         shopCategories: configData.shopCategories || prev.shopCategories,
         shopItems: configData.shopItems || prev.shopItems,
         jobs: configData.jobs || prev.jobs,
-        logs: feedData.logs || prev.logs
-      }));
+        logs: feedData.logs || prev.logs,
+        server_time: data.server_time || prev.server_time,
+        job_timers: data.job_timers || prev.job_timers
+      }));;
       setIsLoading(false);
       
     } catch (e: any) {

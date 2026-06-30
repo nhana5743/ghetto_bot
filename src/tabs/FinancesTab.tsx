@@ -32,16 +32,17 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
   const [jobCooldowns, setJobCooldowns] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    if (config?.server_time) {
-      const serverTime = config.server_time;
-      const posobieCd = Math.max(0, 43200 - (serverTime - (config.stats.last_posobie || 0)));
+    if (config?.stats) {
+      const serverTimeOffset = config.server_time ? Math.floor(Date.now()/1000) - config.server_time : 0;
+      const now = Math.floor(Date.now()/1000) - serverTimeOffset;
+      const posobieCd = Math.max(0, 43200 - (now - (config.stats.last_posobie || 0)));
       setAllowanceCooldown(posobieCd);
 
       const jCd: Record<string, number> = {};
       if (config.jobs && config.job_timers) {
         config.jobs.forEach((job: any) => {
           const lastTime = config.job_timers[job.id] || 0;
-          const remaining = Math.max(0, job.cd - (serverTime - lastTime));
+          const remaining = Math.max(0, job.cd - (now - lastTime));
           if (remaining > 0) jCd[job.id] = remaining;
         });
       }
