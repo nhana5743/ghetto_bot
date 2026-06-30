@@ -19,7 +19,25 @@ export function MarketTab({ apiCall, isDarkMode, config }: MarketTabProps) {
   ];
 
   if (activeCategory) {
-    const items = (config.shopItems as any)[activeCategory.id] || [];
+    let items = (config.shopItems as any)[activeCategory.id] || [];
+    
+    if (activeCategory.id === 'rehab') {
+      const addiction = config.stats.addiction || 0;
+      if (addiction === 0) {
+        items = [];
+      } else {
+        items = items.map((item: any) => ({ ...item, price: addiction * 100 }));
+      }
+    }
+
+    const extractEmoji = (text: string) => {
+      const match = text.match(/([\p{Emoji_Presentation}\p{Extended_Pictographic}])/u);
+      return match ? match[0] : '🛍️';
+    };
+
+    const stripEmoji = (text: string) => {
+      return text.replace(/([\p{Emoji_Presentation}\p{Extended_Pictographic}])/gu, '').trim();
+    };
 
     return (
       <div className="flex flex-col gap-6 pb-24 animate-fade-in">
@@ -45,15 +63,22 @@ export function MarketTab({ apiCall, isDarkMode, config }: MarketTabProps) {
                   <span className={`absolute top-2.5 right-2.5 text-[11px] font-bold px-2 py-1 rounded-full z-10 ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}>
                     {item.price} D
                   </span>
-                  <ShoppingCart className="w-12 h-12 text-white drop-shadow-xl opacity-90 transition-transform group-hover:scale-110" />
+                  <div className="text-5xl drop-shadow-md transform transition-transform group-hover:scale-110">
+                    {extractEmoji(item.name)}
+                  </div>
                 </div>
                 <div className="mt-3 px-1 text-center pb-3">
-                  <h3 className={`text-[15px] font-bold leading-tight transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h3>
+                  <h3 className={`text-[15px] font-bold leading-tight transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{stripEmoji(item.name)}</h3>
                   <p className={`text-[12px] mt-1 font-medium transition-colors ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.desc}</p>
                 </div>
               </div>
             )
           })}
+          {items.length === 0 && activeCategory.id === 'rehab' && (
+            <div className={`col-span-2 text-center p-6 rounded-xl font-medium ${isDarkMode ? 'bg-[#2A2A2A] text-gray-300' : 'bg-[#F2F4F5] text-gray-700'}`}>
+              Твой торч на нуле, рехаб тебе не нужен! Иди выпей пивка.
+            </div>
+          )}
         </div>
       </div>
     );

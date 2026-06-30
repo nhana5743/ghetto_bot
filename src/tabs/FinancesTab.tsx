@@ -32,6 +32,22 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
   const [jobCooldowns, setJobCooldowns] = useState<Record<string, number>>({});
 
   useEffect(() => {
+    if (config?.server_time) {
+      const serverTime = config.server_time;
+      const posobieCd = Math.max(0, 43200 - (serverTime - (config.stats.last_posobie || 0)));
+      setAllowanceCooldown(posobieCd);
+
+      const jCd: Record<string, number> = {};
+      if (config.jobs && config.job_timers) {
+        config.jobs.forEach((job: any) => {
+          const lastTime = config.job_timers[job.id] || 0;
+          const remaining = Math.max(0, job.cd - (serverTime - lastTime));
+          if (remaining > 0) jCd[job.id] = remaining;
+        });
+      }
+      setJobCooldowns(jCd);
+    }
+
     const timer = setInterval(() => {
       setAllowanceCooldown(prev => Math.max(0, prev - 1));
       setJobCooldowns(prev => {
@@ -47,7 +63,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [config]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
@@ -62,7 +78,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
     const res = await apiCall('job_action', { jobId: selectedJob.id, action: actionName });
     if (res && res.success) {
       setJobResultText(res.job_result || res.message);
-      setJobCooldowns(prev => ({ ...prev, [selectedJob.id]: 3600 }));
+      setJobCooldowns(prev => ({ ...prev, [selectedJob.id]: selectedJob.cd || 3600 }));
     } else {
       setJobResultText(res?.error || 'Ошибка');
     }
@@ -129,22 +145,22 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
         </div>
         <div className={`p-6 rounded-[2rem] flex flex-col gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
           <div className={`p-4 rounded-xl text-[15px] leading-relaxed font-medium ${isDarkMode ? 'bg-[#2A2A2A] text-gray-300' : 'bg-[#F2F4F5] text-gray-700'}`}>
-            Здесь будет подробное описание работы, сгенерированное нейросетью. Например, условия работы, риски и возможная награда. Ожидание данных от сервера...
+            {selectedJob.desc}
           </div>
           <div className="flex flex-col gap-3 mt-2">
             <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Действия:</h3>
-            <button 
-              onClick={() => handleJobAction('Быстро и рискованно')}
-              className={`w-full py-3.5 rounded-xl font-bold active:scale-95 transition-transform shadow-sm ${isDarkMode ? 'bg-[#2A2A2A] text-white hover:bg-[#333333]' : 'bg-[#F2F4F5] text-gray-900 hover:bg-[#E5E7E8]'}`}
-            >
-              Быстро и рискованно
-            </button>
-            <button 
-              onClick={() => handleJobAction('Медленно и безопасно')}
-              className={`w-full py-3.5 rounded-xl font-bold active:scale-95 transition-transform shadow-sm ${isDarkMode ? 'bg-[#2A2A2A] text-white hover:bg-[#333333]' : 'bg-[#F2F4F5] text-gray-900 hover:bg-[#E5E7E8]'}`}
-            >
-              Медленно и безопасно
-            </button>
+            {selectedJob.actions && Object.keys(selectedJob.actions).map(act_key => {
+              const act = selectedJob.actions[act_key];
+              return (
+                <button 
+                  key={act_key}
+                  onClick={() => handleJobAction(act.text)}
+                  className={`w-full py-3.5 px-2 h-auto min-h-[50px] leading-tight rounded-xl font-bold active:scale-95 transition-transform shadow-sm ${isDarkMode ? 'bg-[#2A2A2A] text-white hover:bg-[#333333]' : 'bg-[#F2F4F5] text-gray-900 hover:bg-[#E5E7E8]'}`}
+                >
+                  {act.text}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -194,7 +210,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
           onClick={() => {
             if (allowanceCooldown > 0) return;
             apiCall('posobie');
-            setAllowanceCooldown(3600); // mock 1 hour cooldown
+            setAllowanceCooldown(43200); // 12 hour cooldown
           }}
           disabled={allowanceCooldown > 0}
           className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5 rounded-[1.8rem] flex flex-col items-center justify-center gap-3 transition-colors ${allowanceCooldown > 0 ? 'opacity-60 cursor-not-allowed' : 'active:scale-95'} ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}
@@ -265,7 +281,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
       <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[1.8rem] transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
         <div className="flex items-center gap-3 mb-5">
           <Send className={`w-6 h-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
-          <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>💳 Перевод донгов</h3>
+          <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>💳 Отсыпать шекелей</h3>
         </div>
         <div className="flex flex-col gap-3">
           <select 

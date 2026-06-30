@@ -1,0 +1,1 @@
+{"root":["./vite.config.ts","./src/App.tsx","./src/DevPanel.tsx","./src/config.ts","./src/main.tsx","./src/vite-env.d.ts","./src/components/Modal.tsx","./src/components/Toast.tsx","./src/tabs/CombatTab.tsx","./src/tabs/FeedTab.tsx","./src/tabs/FinancesTab.tsx","./src/tabs/MarketTab.tsx","./src/tabs/ProfileTab.tsx"],"version":"5.8.3"}

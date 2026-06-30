@@ -17,11 +17,13 @@ export default function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [username, setUsername] = useState('@wlyrx');
   const [firstName, setFirstName] = useState('Игрок');
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Dev panel state
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
   const [devAccessDenied, setDevAccessDenied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -33,6 +35,7 @@ export default function App() {
       if (tgUser) {
         if (tgUser.username) setUsername('@' + tgUser.username);
         if (tgUser.first_name) setFirstName(tgUser.first_name);
+        if (tgUser.photo_url) setAvatar(tgUser.photo_url);
       }
       
       // Init theme from TG if available
@@ -93,10 +96,12 @@ export default function App() {
         jobs: configData.jobs || prev.jobs,
         logs: feedData.logs || prev.logs
       }));
+      setIsLoading(false);
       
     } catch (e: any) {
       console.error(e);
       alert("Ошибка при загрузке данных: " + e.message);
+      setIsLoading(false);
     }
   };
 
@@ -144,11 +149,23 @@ export default function App() {
     { id: 4, icon: Activity, label: 'Лента' },
   ];
 
+  if (isLoading) {
+    return (
+      <div className={`w-full max-w-md mx-auto min-h-screen ${isDarkMode ? 'bg-[#121212]' : 'bg-[#F2F4F5]'} flex items-center justify-center font-sans`}>
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-12 h-12 border-4 border-t-transparent border-gray-500 rounded-full"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`w-full max-w-md mx-auto min-h-screen ${isDarkMode ? 'bg-[#121212]' : 'bg-[#F2F4F5]'} font-sans flex flex-col relative overflow-hidden transition-colors duration-300`}>
       {/* Header */}
       <div className="pt-12 px-6 flex justify-between items-center z-10 shrink-0">
-        <h1 className={`text-[32px] font-bold tracking-tight transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>ЦПУ ГЕТТО</h1>
+        <h1 className={`text-[32px] font-bold tracking-tight transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Dегенерат</h1>
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsDarkMode(!isDarkMode)}
@@ -176,7 +193,7 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
-            {activeTab === 0 && <ProfileTab username={username} firstName={firstName} isDarkMode={isDarkMode} apiCall={apiCall} config={userData} />}
+            {activeTab === 0 && <ProfileTab username={username} firstName={firstName} avatar={avatar} isDarkMode={isDarkMode} apiCall={apiCall} config={userData} />}
             {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 2 && <CombatTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 3 && <MarketTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
@@ -227,6 +244,7 @@ export default function App() {
         onClose={() => setIsDevModalOpen(false)} 
         apiCall={apiCall} 
         isDarkMode={isDarkMode} 
+        config={userData}
       />
     </div>
   );

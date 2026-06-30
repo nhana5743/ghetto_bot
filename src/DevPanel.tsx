@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Modal } from './components/Modal';
-import { config } from './config';
+
 
 interface DevPanelProps {
   isOpen: boolean;
   onClose: () => void;
   apiCall: (action: string, payload?: any) => void;
   isDarkMode: boolean;
+  config: any;
 }
 
 type ActionType = 
@@ -17,7 +18,7 @@ type ActionType =
   | 'add_strength' | 'remove_strength'
   | 'add_agility' | 'remove_agility';
 
-export function DevPanel({ isOpen, onClose, apiCall, isDarkMode }: DevPanelProps) {
+export function DevPanel({ isOpen, onClose, apiCall, isDarkMode, config }: DevPanelProps) {
   const [activeAction, setActiveAction] = useState<ActionType | null>(null);
   const [step, setStep] = useState<'username' | 'item' | 'amount'>('username');
   

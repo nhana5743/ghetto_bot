@@ -23,11 +23,16 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
   const [trainCooldown, setTrainCooldown] = useState(0);
 
   useEffect(() => {
+    if (config?.server_time) {
+      const serverTime = config.server_time;
+      const tCd = Math.max(0, 7200 - (serverTime - (config.stats.last_train || 0)));
+      setTrainCooldown(tCd);
+    }
     const timer = setInterval(() => {
       setTrainCooldown(prev => Math.max(0, prev - 1));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [config]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
@@ -58,7 +63,7 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
           <Dumbbell className="w-10 h-10 text-white drop-shadow-md" />
         </div>
         <div>
-          <h3 className={`font-bold text-xl mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Тренировка (Кач)</h3>
+          <h3 className={`font-bold text-xl mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Тренировка</h3>
           <p className={`text-[15px] px-4 leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             С чем качаться будем, доходяга?
           </p>
@@ -71,7 +76,7 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
           disabled={trainCooldown > 0}
           className={`w-full mt-3 font-bold py-4 rounded-full transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] text-[17px] ${trainCooldown > 0 ? 'opacity-60 cursor-not-allowed' : 'active:scale-95'} ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}
         >
-          {trainCooldown > 0 ? formatTime(trainCooldown) : '💪 Тренировка (Кач)'}
+          {trainCooldown > 0 ? formatTime(trainCooldown) : '💪 Тренировка'}
         </button>
       </div>
 
@@ -100,17 +105,29 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
         </div>
       </div>
 
-      <Modal isOpen={fightModalOpen} onClose={() => setFightModalOpen(false)} title="🥊 Набить ебало" isDarkMode={isDarkMode}>
+      <Modal isOpen={fightModalOpen} onClose={() => setFightModalOpen(false)} title="🥊 Итоги боя" isDarkMode={isDarkMode}>
         <div className="flex flex-col gap-4 mt-2">
           <div className={`p-4 rounded-xl text-[15px] leading-relaxed font-medium italic ${isDarkMode ? 'bg-[#2A2A2A] text-gray-300' : 'bg-[#F2F4F5] text-gray-700'}`}>
             {fightResultText}
           </div>
-          <button 
-            onClick={() => setFightModalOpen(false)}
-            className={`w-full py-4 rounded-full font-bold text-[17px] active:scale-95 transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}
-          >
-            Закрыть
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => {
+                if(fightResultText && !fightResultText.includes("Ошибка") && !fightResultText.includes("Лимит") && !fightResultText.includes("Ожидание")) {
+                  apiCall('boast', { text: fightResultText });
+                }
+              }}
+              className={`flex-1 py-4 rounded-full font-bold text-[17px] active:scale-95 transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] border-2 ${isDarkMode ? 'border-white text-white' : 'border-[#131313] text-[#131313]'}`}
+            >
+              Похвалиться
+            </button>
+            <button 
+              onClick={() => setFightModalOpen(false)}
+              className={`flex-1 py-4 rounded-full font-bold text-[17px] active:scale-95 transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}
+            >
+              Закрыть
+            </button>
+          </div>
         </div>
       </Modal>
 
@@ -121,7 +138,7 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
               apiCall('train');
               setIsTrainModalOpen(false);
               // Сюда будет передаваться время кулдауна из python скрипта
-              setTrainCooldown(3600); 
+              setTrainCooldown(7200); 
             }}
             className={`rounded-xl p-4 flex justify-between items-center transition-colors text-left active:scale-[0.98] ${isDarkMode ? 'bg-[#2A2A2A] hover:bg-[#333333]' : 'bg-[#F2F4F5] hover:bg-[#E5E7E8]'}`}
           >
@@ -138,7 +155,7 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
                 apiCall('train', { itemId: item.id });
                 setIsTrainModalOpen(false);
                 // Сюда будет передаваться время кулдауна из python скрипта
-                setTrainCooldown(3600);
+                setTrainCooldown(7200);
               }}
               className={`rounded-xl p-4 flex justify-between items-center transition-colors text-left active:scale-[0.98] ${isDarkMode ? 'bg-[#2A2A2A] hover:bg-[#333333]' : 'bg-[#F2F4F5] hover:bg-[#E5E7E8]'}`}
             >
