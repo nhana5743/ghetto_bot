@@ -24,6 +24,8 @@ export default function App() {
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
   const [devAccessDenied, setDevAccessDenied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -74,6 +76,8 @@ export default function App() {
   const API_URL = import.meta.env.VITE_API_URL || (window.location.port === '5173' ? 'http://localhost:8000' : window.location.origin);
 
   const fetchUserData = async () => {
+    setIsLoading(true);
+    setHasError(false);
     try {
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
       const tg_id = tgUser?.id || 123456789;
@@ -104,7 +108,8 @@ export default function App() {
       
     } catch (e: any) {
       console.error(e);
-      alert("Ошибка при загрузке данных: " + e.message);
+      setErrorMsg(e.message);
+      setHasError(true);
       setIsLoading(false);
     }
   };
@@ -161,6 +166,24 @@ export default function App() {
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-12 h-12 border-4 border-t-transparent border-gray-500 rounded-full"
         />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className={`w-full max-w-md mx-auto min-h-screen ${isDarkMode ? 'bg-[#121212]' : 'bg-[#F2F4F5]'} flex flex-col items-center justify-center font-sans p-6 text-center`}>
+        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${isDarkMode ? 'bg-[#3A1E1E]' : 'bg-red-100'}`}>
+          <span className="text-4xl">🔌</span>
+        </div>
+        <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Ошибка Подключения</h2>
+        <p className={`mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{errorMsg || 'Сервер временно недоступен. Бот мог перезагрузиться.'}</p>
+        <button 
+          onClick={() => fetchUserData()}
+          className={`w-full py-4 rounded-full font-bold text-[17px] active:scale-95 transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}
+        >
+          Повторить попытку
+        </button>
       </div>
     );
   }
