@@ -158,7 +158,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
             className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md"
           >
             <h3 className="text-2xl text-gray-300 font-bold mb-6 text-center px-8">
-              {stage === 1 ? 'Запомни последовательность цветов!' : 'Взломай замок: останови ползунок в желтой зоне!'}
+              {stage === 1 ? 'Запомни последовательность цветов!' : 'Взломай замок: останови ползунок в зеленой зоне!'}
             </h3>
             <div className="text-8xl font-black text-white">{introTimer}</div>
           </motion.div>
