@@ -4,6 +4,7 @@ import { MinesGame } from './MinesGame';
 import { CrashGame } from './CrashGame';
 import { SlotsGame } from './SlotsGame';
 import { ShellGame } from './ShellGame';
+import { BlackjackGame } from './BlackjackGame';
 
 interface CasinoHubProps {
   isDarkMode: boolean;
@@ -13,11 +14,12 @@ interface CasinoHubProps {
 }
 
 export const CasinoHub: React.FC<CasinoHubProps> = ({ isDarkMode, onClose, apiCall, balance }) => {
-  const [activeGame, setActiveGame] = useState<'hub' | 'mines' | 'crash' | 'slots' | 'shell'>('hub');
+  const [activeGame, setActiveGame] = useState<'hub' | 'mines' | 'crash' | 'slots' | 'shell' | 'blackjack'>('hub');
 
   const games = [
     { id: 'mines', name: 'Минное поле', icon: '💣', color: 'from-red-500 to-orange-500', desc: 'Открывай ячейки, не нарвись на мину' },
     { id: 'crash', name: 'Краш', icon: '🚀', color: 'from-blue-500 to-cyan-500', desc: 'Забери деньги до обвала графика' },
+    { id: 'blackjack', name: 'Блэкджек', icon: '🃏', color: 'from-emerald-600 to-teal-600', desc: 'Обыграй дилера и собери 21' },
     { id: 'slots', name: 'Слоты', icon: '🎰', color: 'from-purple-500 to-pink-500', desc: 'Крути барабаны и лови джекпот' },
     { id: 'shell', name: 'Наперстки', icon: '🎲', color: 'from-green-500 to-emerald-500', desc: 'Угадай, где спрятан шарик' },
   ];
@@ -68,6 +70,7 @@ export const CasinoHub: React.FC<CasinoHubProps> = ({ isDarkMode, onClose, apiCa
 
         {activeGame === 'mines' && <MinesGame key="mines" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
         {activeGame === 'crash' && <CrashGame key="crash" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'blackjack' && <BlackjackGame key="blackjack" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
         {activeGame === 'slots' && <SlotsGame key="slots" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
         {activeGame === 'shell' && <ShellGame key="shell" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
       </AnimatePresence>
