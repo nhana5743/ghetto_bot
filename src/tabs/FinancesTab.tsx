@@ -6,10 +6,11 @@ import { Modal } from '../components/Modal';
 interface FinancesTabProps {
   apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
-  config?: any;
+  config: any;
+  onStartRobbery?: (target: string) => void;
 }
 
-export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
+export function FinancesTab({ apiCall, isDarkMode, config, onStartRobbery }: FinancesTabProps) {
   const [betAmount, setBetAmount] = useState('');
   const [robTarget, setRobTarget] = useState(config.users[0]);
   const [transferTarget, setTransferTarget] = useState(config.users[0]);
@@ -29,6 +30,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
   const [jobResultText, setJobResultText] = useState('');
 
   const [allowanceCooldown, setAllowanceCooldown] = useState(0);
+  const [robberyCooldown, setRobberyCooldown] = useState(0);
   const [jobCooldowns, setJobCooldowns] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -37,6 +39,11 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
       const now = Math.floor(Date.now()/1000) - serverTimeOffset;
       const posobieCd = Math.max(0, 43200 - (now - (config.stats.last_posobie || 0)));
       setAllowanceCooldown(posobieCd);
+
+      if (config.job_timers) {
+        const lastRob = config.job_timers['robbery'] || 0;
+        setRobberyCooldown(Math.max(0, 43200 - (now - lastRob)));
+      }
 
       const jCd: Record<string, number> = {};
       if (config.jobs && config.job_timers) {
@@ -51,6 +58,7 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
 
     const timer = setInterval(() => {
       setAllowanceCooldown(prev => Math.max(0, prev - 1));
+      setRobberyCooldown(prev => Math.max(0, prev - 1));
       setJobCooldowns(prev => {
         const next = { ...prev };
         let changed = false;
@@ -270,10 +278,21 @@ export function FinancesTab({ apiCall, isDarkMode, config }: FinancesTabProps) {
             {config.users.map(u => <option key={u} value={u}>{u}</option>)}
           </select>
           <button 
-            onClick={() => apiCall('rob', { target: robTarget })}
-            className={`border-2 font-bold py-3.5 rounded-[1.2rem] active:scale-95 transition-all ${isDarkMode ? 'bg-transparent border-white text-white hover:bg-white/10' : 'bg-white border-[#131313] text-[#131313] hover:bg-gray-50'}`}
+            onClick={async () => {
+              if (robberyCooldown > 0) return;
+              const res = await apiCall('rob_check', { target: robTarget });
+              if (res?.success && onStartRobbery) {
+                onStartRobbery(robTarget);
+              }
+            }}
+            disabled={robberyCooldown > 0}
+            className={`border-2 font-bold py-3.5 rounded-[1.2rem] transition-all flex items-center justify-center ${robberyCooldown > 0 ? 'opacity-60 cursor-not-allowed' : 'active:scale-95'} ${isDarkMode ? 'bg-transparent border-white text-white hover:bg-white/10' : 'bg-white border-[#131313] text-[#131313] hover:bg-gray-50'}`}
           >
-            Ограбить
+            {robberyCooldown > 0 ? (
+              <span className="font-mono">{formatTime(robberyCooldown)}</span>
+            ) : (
+              "Ограбить"
+            )}
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { Toast } from './components/Toast';
 import { Modal } from './components/Modal';
 import { DevPanel } from './DevPanel';
 import { config } from './config';
+import { RobberyMinigame } from './tabs/RobberyMinigame';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +20,7 @@ export default function App() {
   const [firstName, setFirstName] = useState('Игрок');
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [robberyTarget, setRobberyTarget] = useState<string | null>(null);
   
   // Dev panel state
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
@@ -221,10 +223,20 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 0 && <ProfileTab username={username} firstName={firstName} avatar={avatar} isDarkMode={isDarkMode} apiCall={apiCall} config={userData} />}
-            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
+            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} onStartRobbery={(target) => { setRobberyTarget(target); setActiveTab(10); }} />}
             {activeTab === 2 && <CombatTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 3 && <MarketTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 4 && <FeedTab isDarkMode={isDarkMode} config={userData} />}
+            {activeTab === 10 && robberyTarget && (
+              <RobberyMinigame 
+                target={robberyTarget} 
+                isDarkMode={isDarkMode} 
+                onComplete={(success) => {
+                  setActiveTab(1);
+                  apiCall('rob_submit', { target: robberyTarget, won: success });
+                }} 
+              />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>

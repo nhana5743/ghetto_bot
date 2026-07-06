@@ -188,6 +188,7 @@ export function DevPanel({ isOpen, onClose, apiCall, isDarkMode, config }: DevPa
   const globalButtons = [
     { id: 'reset_train_cd', label: 'Сброс КД тренировки (Всем)' },
     { id: 'reset_allowance_cd', label: 'Сброс КД пособия (Всем)' },
+    { id: 'reset_robbery_cd', label: 'Сброс КД ограблений (Всем)' },
     { id: 'reset_addiction', label: 'Сброс жажды дозы (Всем)' }
   ];
 
