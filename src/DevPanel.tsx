@@ -108,9 +108,15 @@ export function DevPanel({ isOpen, onClose, apiCall, isDarkMode, config }: DevPa
     }
 
     if (step === 'item' && needsItemSelection) {
+      const pveItems = [
+        { id: "item_kastrulya", name: "Дедова Кастрюля", type: "pve_consumable" },
+        { id: "item_spidy", name: "Спиды", type: "pve_consumable" },
+        { id: "item_baltika9", name: "Балтика 9", type: "pve_consumable" }
+      ];
       const allItems = [
         ...config.backpack,
-        ...Object.values(config.shopItems).flat()
+        ...Object.values(config.shopItems).flat(),
+        ...pveItems
       ].filter((item: any, index, self) => index === self.findIndex((t: any) => t.id === item.id));
 
       const itemsList = activeAction === 'give_item' 
