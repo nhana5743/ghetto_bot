@@ -79,8 +79,10 @@ export default function App() {
 
   const API_URL = import.meta.env.VITE_API_URL || (window.location.port === '5173' ? 'http://localhost:8000' : window.location.origin);
 
-  const fetchUserData = async () => {
-    setIsLoading(true);
+  const fetchUserData = async (isInitial = false) => {
+    if (isInitial) {
+      setIsLoading(true);
+    }
     setHasError(false);
     try {
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
@@ -109,18 +111,22 @@ export default function App() {
         server_time: data.server_time || prev.server_time,
         job_timers: data.job_timers || prev.job_timers
       }));
-      setIsLoading(false);
+      if (isInitial) {
+        setIsLoading(false);
+      }
       
     } catch (e: any) {
       console.error(e);
       setErrorMsg(e.message);
       setHasError(true);
-      setIsLoading(false);
+      if (isInitial) {
+        setIsLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchUserData();
+    fetchUserData(true);
   }, []);
 
   const apiCall = async (action: string, payload?: any) => {
@@ -136,7 +142,7 @@ export default function App() {
       });
       const data = await res.json();
       if (data.success) {
-        if (action !== 'rob_check') {
+        if (action !== 'rob_check' && action !== 'casino_start' && action !== 'casino_finish') {
           showToast(data.message || `Успешно`);
         }
         await fetchUserData();
