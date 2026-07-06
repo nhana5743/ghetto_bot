@@ -5,6 +5,13 @@ import { CrashGame } from './CrashGame';
 import { SlotsGame } from './SlotsGame';
 import { ShellGame } from './ShellGame';
 import { BlackjackGame } from './BlackjackGame';
+import { PlinkoGame } from './PlinkoGame';
+import { HiLoGame } from './HiLoGame';
+import { TowerGame } from './TowerGame';
+import { WheelGame } from './WheelGame';
+import { DiceGame } from './DiceGame';
+import { PokerGame } from './PokerGame';
+import { RacingGame } from './RacingGame';
 
 interface CasinoHubProps {
   isDarkMode: boolean;
@@ -14,14 +21,21 @@ interface CasinoHubProps {
 }
 
 export const CasinoHub: React.FC<CasinoHubProps> = ({ isDarkMode, onClose, apiCall, balance }) => {
-  const [activeGame, setActiveGame] = useState<'hub' | 'mines' | 'crash' | 'slots' | 'shell' | 'blackjack'>('hub');
+  const [activeGame, setActiveGame] = useState<'hub' | 'mines' | 'crash' | 'slots' | 'shell' | 'blackjack' | 'plinko' | 'hilo' | 'tower' | 'wheel' | 'dice' | 'poker' | 'racing'>('hub');
 
   const games = [
     { id: 'mines', name: 'Минное поле', icon: '💣', color: 'from-red-500 to-orange-500', desc: 'Открывай ячейки, не нарвись на мину' },
-    { id: 'crash', name: 'Краш', icon: '🚀', color: 'from-blue-500 to-cyan-500', desc: 'Забери деньги до обвала графика' },
+    { id: 'tower', name: 'Башня', icon: '🏰', color: 'from-blue-600 to-cyan-500', desc: 'Поднимайся выше за большим множителем' },
+    { id: 'crash', name: 'Краш', icon: '🚀', color: 'from-blue-500 to-indigo-500', desc: 'Забери деньги до обвала графика' },
+    { id: 'dice', name: 'Кости', icon: '🎲', color: 'from-indigo-500 to-purple-600', desc: 'Установи шанс победы и брось кости' },
+    { id: 'plinko', name: 'Плинко', icon: '🔮', color: 'from-pink-500 to-rose-500', desc: 'Сбрось шарик в ячейку с джекпотом' },
+    { id: 'wheel', name: 'Колесо Фортуны', icon: '🎡', color: 'from-fuchsia-500 to-pink-500', desc: 'Крути колесо и забирай выигрыш' },
     { id: 'blackjack', name: 'Блэкджек', icon: '🃏', color: 'from-emerald-600 to-teal-600', desc: 'Обыграй дилера и собери 21' },
-    { id: 'slots', name: 'Слоты', icon: '🎰', color: 'from-purple-500 to-pink-500', desc: 'Крути барабаны и лови джекпот' },
-    { id: 'shell', name: 'Наперстки', icon: '🎲', color: 'from-green-500 to-emerald-500', desc: 'Угадай, где спрятан шарик' },
+    { id: 'poker', name: 'Видео Покер', icon: '♣️', color: 'from-purple-600 to-indigo-600', desc: 'Собери лучшую покерную комбинацию' },
+    { id: 'hilo', name: 'Больше-Меньше', icon: '📈', color: 'from-yellow-500 to-orange-500', desc: 'Угадай следующую карту' },
+    { id: 'shell', name: 'Наперстки', icon: '🏺', color: 'from-green-500 to-emerald-500', desc: 'Угадай, где спрятан шарик' },
+    { id: 'slots', name: 'Слоты', icon: '🎰', color: 'from-purple-500 to-fuchsia-500', desc: 'Крути барабаны и лови джекпот' },
+    { id: 'racing', name: 'Скачки', icon: '🐌', color: 'from-lime-500 to-green-500', desc: 'Поставь на быстрейшую улитку' },
   ];
 
   return (
@@ -73,6 +87,13 @@ export const CasinoHub: React.FC<CasinoHubProps> = ({ isDarkMode, onClose, apiCa
         {activeGame === 'blackjack' && <BlackjackGame key="blackjack" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
         {activeGame === 'slots' && <SlotsGame key="slots" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
         {activeGame === 'shell' && <ShellGame key="shell" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'plinko' && <PlinkoGame key="plinko" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'hilo' && <HiLoGame key="hilo" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'tower' && <TowerGame key="tower" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'wheel' && <WheelGame key="wheel" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'dice' && <DiceGame key="dice" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'poker' && <PokerGame key="poker" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
+        {activeGame === 'racing' && <RacingGame key="racing" apiCall={apiCall} isDarkMode={isDarkMode} balance={balance} />}
       </AnimatePresence>
     </div>
   );
