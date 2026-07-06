@@ -65,7 +65,7 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
       <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-center transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
         <button 
           onClick={() => setIsPveOpen(true)}
-          className={`w-full flex items-center justify-center gap-3 py-4 rounded-full font-bold transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] text-[17px] active:scale-95 bg-[#8CD842] text-white`}
+          className={`w-full flex items-center justify-center gap-3 py-4 rounded-full font-bold transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] text-[17px] active:scale-95 bg-[#2563EB] text-white`}
         >
           ⚔️ Разборки на районе (Боты)
         </button>
