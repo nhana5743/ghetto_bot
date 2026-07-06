@@ -15,12 +15,25 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
   const [playerSequence, setPlayerSequence] = useState<number[]>([]);
   const [isShowingSequence, setIsShowingSequence] = useState(true);
   const [activeColorIndex, setActiveColorIndex] = useState<number | null>(null);
+  const [introTimer, setIntroTimer] = useState<number | null>(7);
   
   const [timeLeft, setTimeLeft] = useState(15000);
   
-  // Timer effect
+  // Intro timer effect
   useEffect(() => {
-    if ((stage === 1 && isShowingSequence) || timeLeft <= 0) return;
+    if (introTimer !== null) {
+      if (introTimer > 0) {
+        const t = setTimeout(() => setIntroTimer(introTimer - 1), 1000);
+        return () => clearTimeout(t);
+      } else {
+        setIntroTimer(null);
+      }
+    }
+  }, [introTimer]);
+
+  // Main countdown timer effect
+  useEffect(() => {
+    if ((stage === 1 && isShowingSequence) || introTimer !== null || timeLeft <= 0) return;
     
     const interval = setInterval(() => {
       setTimeLeft(prev => {
@@ -37,7 +50,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
 
   // Stage 1: Simon Says
   useEffect(() => {
-    if (stage === 1) {
+    if (stage === 1 && introTimer === null) {
       const seq = Array.from({ length: 6 }, () => Math.floor(Math.random() * 4));
       setSequence(seq);
       
@@ -58,7 +71,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
   }, [stage]);
 
   const handleColorClick = (idx: number) => {
-    if (isShowingSequence) return;
+    if (isShowingSequence || introTimer !== null) return;
     
     const newSeq = [...playerSequence, idx];
     setPlayerSequence(newSeq);
@@ -73,6 +86,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
       // Pass stage 1
       setIsShowingSequence(true); // Stop timer from ticking during transition
       setTimeout(() => {
+        setIntroTimer(7);
         setStage(2);
         setTimeLeft(20000);
       }, 500);
@@ -86,7 +100,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
   const targetPos = useRef(Math.floor(Math.random() * 60) + 20); // 20 to 80
 
   useEffect(() => {
-    if (stage === 2) {
+    if (stage === 2 && introTimer === null) {
       const interval = setInterval(() => {
         setSliderPos((prev) => {
           let next = prev + (sliderDir * 3);
@@ -100,6 +114,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
   }, [stage, sliderDir]);
 
   const handleLockClick = () => {
+    if (introTimer !== null) return;
     const diff = Math.abs(sliderPos - targetPos.current);
     if (diff <= 10) {
       const newUnlocked = pinsUnlocked + 1;
@@ -133,6 +148,22 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
       ) : (
          <div className="h-13 mb-6"></div> 
       )}
+
+      <AnimatePresence>
+        {introTimer !== null && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md"
+          >
+            <h3 className="text-2xl text-gray-300 font-bold mb-6 text-center px-8">
+              {stage === 1 ? 'Запомни последовательность цветов!' : 'Взломай замок: останови ползунок в желтой зоне!'}
+            </h3>
+            <div className="text-8xl font-black text-white">{introTimer}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {stage === 1 && (
