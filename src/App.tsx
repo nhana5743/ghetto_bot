@@ -11,6 +11,7 @@ import { Modal } from './components/Modal';
 import { DevPanel } from './DevPanel';
 import { config } from './config';
 import { RobberyMinigame } from './tabs/RobberyMinigame';
+import { CasinoHub } from './casino/CasinoHub';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(0);
@@ -21,6 +22,7 @@ export default function App() {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [robberyTarget, setRobberyTarget] = useState<string | null>(null);
+  const [showCasino, setShowCasino] = useState(false);
   
   // Dev panel state
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
@@ -195,6 +197,17 @@ export default function App() {
 
   return (
     <div className={`w-full max-w-md mx-auto min-h-screen ${isDarkMode ? 'bg-[#121212]' : 'bg-[#F2F4F5]'} font-sans flex flex-col relative overflow-hidden transition-colors duration-300`}>
+      {showCasino ? (
+        <div className="absolute inset-0 z-50 bg-inherit">
+          <CasinoHub 
+            isDarkMode={isDarkMode} 
+            onClose={() => setShowCasino(false)} 
+            apiCall={apiCall} 
+            balance={userData?.stats?.balance || 0} 
+          />
+        </div>
+      ) : null}
+      
       {/* Header */}
       <div className="pt-12 px-6 flex justify-between items-center z-10 shrink-0">
         <h1 className={`text-[32px] font-bold tracking-tight transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Dегенерат</h1>
@@ -226,7 +239,7 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 0 && <ProfileTab username={username} firstName={firstName} avatar={avatar} isDarkMode={isDarkMode} apiCall={apiCall} config={userData} />}
-            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} onStartRobbery={(target) => { setRobberyTarget(target); setActiveTab(10); }} />}
+            {activeTab === 1 && <FinancesTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} onStartRobbery={(target) => { setRobberyTarget(target); setActiveTab(10); }} onOpenCasino={() => setShowCasino(true)} />}
             {activeTab === 2 && <CombatTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 3 && <MarketTab apiCall={apiCall} isDarkMode={isDarkMode} config={userData} />}
             {activeTab === 4 && <FeedTab isDarkMode={isDarkMode} config={userData} />}

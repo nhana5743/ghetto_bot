@@ -7,10 +7,11 @@ interface FinancesTabProps {
   apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
   config: any;
-  onStartRobbery?: (target: string) => void;
+  onStartRobbery: (target: string) => void;
+  onOpenCasino: () => void;
 }
 
-export function FinancesTab({ apiCall, isDarkMode, config, onStartRobbery }: FinancesTabProps) {
+export function FinancesTab({ apiCall, isDarkMode, config, onStartRobbery, onOpenCasino }: FinancesTabProps) {
   const [betAmount, setBetAmount] = useState('');
   const [robTarget, setRobTarget] = useState(config.users[0]);
   const [transferTarget, setTransferTarget] = useState(config.users[0]);
@@ -237,32 +238,14 @@ export function FinancesTab({ apiCall, isDarkMode, config, onStartRobbery }: Fin
         </button>
       </div>
 
-      {/* Casino */}
-      <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[1.8rem] transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
-        <div className="flex items-center gap-3 mb-5">
-          <Dice5 className={`w-6 h-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
-          <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>🎲 Ставка в Казино</h3>
-        </div>
-        <div className="flex gap-3">
-          <input 
-            type="number" 
-            placeholder="Сумма" 
-            value={betAmount}
-            onChange={(e) => setBetAmount(e.target.value)}
-            className={`flex-1 rounded-[1.2rem] px-5 py-3.5 font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#131313] transition-all w-full ${isDarkMode ? 'bg-[#2A2A2A] text-white focus:ring-white' : 'bg-[#F2F4F5] text-gray-900 focus:ring-[#131313]'}`}
-          />
-          <button 
-            onClick={() => {
-              if(!betAmount) return;
-              apiCall('bet', { amount: Number(betAmount) });
-              setBetAmount('');
-            }}
-            className={`font-bold px-6 rounded-[1.2rem] active:scale-95 transition-all whitespace-nowrap shadow-md ${isDarkMode ? 'bg-white text-[#131313]' : 'bg-[#131313] text-white'}`}
-          >
-            Сыграть
-          </button>
-        </div>
-      </div>
+      {/* Casino Hub Button */}
+      <button 
+        onClick={() => onOpenCasino && onOpenCasino()}
+        className={`w-full font-bold py-4 rounded-[1.8rem] shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all flex items-center justify-center gap-3 active:scale-[0.98] ${isDarkMode ? 'bg-gradient-to-r from-[#2a1a4a] to-[#1a1f4a] text-white' : 'bg-gradient-to-r from-[#f3e8ff] to-[#e0e7ff] text-[#4c1d95]'}`}
+      >
+        <Dice5 className="w-6 h-6" />
+        <span className="text-xl">Казино Донг-Коин</span>
+      </button>
 
       {/* Robbery */}
       <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[1.8rem] transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
