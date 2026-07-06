@@ -35,7 +35,7 @@ export function FinancesTab({ apiCall, isDarkMode, config, onStartRobbery }: Fin
 
   useEffect(() => {
     if (config?.stats) {
-      const serverTimeOffset = config.server_time ? Math.floor(Date.now()/1000) - config.server_time : 0;
+      const serverTimeOffset = config.serverTimeOffset || 0;
       const now = Math.floor(Date.now()/1000) - serverTimeOffset;
       const posobieCd = Math.max(0, 43200 - (now - (config.stats.last_posobie || 0)));
       setAllowanceCooldown(posobieCd);

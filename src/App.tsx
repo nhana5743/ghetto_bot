@@ -103,9 +103,10 @@ export default function App() {
         shopItems: configData.shopItems || prev.shopItems,
         jobs: configData.jobs || prev.jobs,
         logs: feedData.logs || prev.logs,
+        serverTimeOffset: data.server_time ? Math.floor(Date.now() / 1000) - data.server_time : prev.serverTimeOffset,
         server_time: data.server_time || prev.server_time,
         job_timers: data.job_timers || prev.job_timers
-      }));;
+      }));
       setIsLoading(false);
       
     } catch (e: any) {
