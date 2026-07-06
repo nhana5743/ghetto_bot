@@ -68,7 +68,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
       
       return () => clearInterval(interval);
     }
-  }, [stage]);
+  }, [stage, introTimer]);
 
   const handleColorClick = (idx: number) => {
     if (isShowingSequence || introTimer !== null) return;
@@ -111,7 +111,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
       }, 15);
       return () => clearInterval(interval);
     }
-  }, [stage, sliderDir]);
+  }, [stage, sliderDir, introTimer]);
 
   const handleLockClick = () => {
     if (introTimer !== null) return;
