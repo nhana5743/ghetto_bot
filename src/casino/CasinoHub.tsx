@@ -39,9 +39,9 @@ export const CasinoHub: React.FC<CasinoHubProps> = ({ isDarkMode, onClose, apiCa
   ];
 
   return (
-    <div className={`w-full min-h-screen flex flex-col items-center justify-start pt-6 p-4 font-sans ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-gray-100 text-gray-900'}`}>
+    <div className={`w-full h-full flex flex-col items-center justify-start pt-6 p-4 pb-20 font-sans overflow-y-auto custom-scrollbar ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-gray-100 text-gray-900'}`}>
       
-      <div className="w-full flex justify-between items-center mb-6 px-2">
+      <div className="w-full flex justify-between items-center mb-6 px-2 shrink-0">
         <button 
           onClick={() => activeGame === 'hub' ? onClose() : setActiveGame('hub')}
           className="text-lg font-bold p-2 active:scale-90 transition-transform"
