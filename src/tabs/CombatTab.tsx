@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Swords, Dumbbell } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
+import { PveRoadmap } from './PveRoadmap';
+
 interface CombatTabProps {
   apiCall: (action: string, payload?: any) => Promise<any>;
   isDarkMode: boolean;
@@ -11,6 +13,7 @@ interface CombatTabProps {
 
 export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
   const [fightTarget, setFightTarget] = useState(config.users[0]);
+  const [isPveOpen, setIsPveOpen] = useState(false);
 
   useEffect(() => {
     if (config.users && config.users.length > 0) {
@@ -58,6 +61,15 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
   return (
     <div className="flex flex-col gap-6 pb-24">
       <h2 className={`text-[28px] font-bold mb-2 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>🥊 БОЙЦОВСКИЙ КЛУБ</h2>
+
+      <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-center transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
+        <button 
+          onClick={() => setIsPveOpen(true)}
+          className={`w-full flex items-center justify-center gap-3 py-4 rounded-full font-bold transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.15)] text-[17px] active:scale-95 bg-[#8CD842] text-white`}
+        >
+          ⚔️ Разборки на районе (Боты)
+        </button>
+      </div>
 
       <div className={`shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-center transition-colors ${isDarkMode ? 'bg-[#1E1E1E]' : 'bg-white'}`}>
         <div className="w-20 h-20 rounded-[1.5rem] bg-gradient-to-br from-[#6E8F3C] to-[#55702E] flex items-center justify-center relative shadow-inner">
@@ -171,6 +183,14 @@ export function CombatTab({ apiCall, isDarkMode, config }: CombatTabProps) {
           )}
         </div>
       </Modal>
+      {isPveOpen && (
+        <PveRoadmap 
+          apiCall={apiCall}
+          config={config}
+          isDarkMode={isDarkMode}
+          onClose={() => setIsPveOpen(false)}
+        />
+      )}
     </div>
   );
 }
