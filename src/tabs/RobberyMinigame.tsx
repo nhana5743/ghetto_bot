@@ -16,10 +16,29 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
   const [isShowingSequence, setIsShowingSequence] = useState(true);
   const [activeColorIndex, setActiveColorIndex] = useState<number | null>(null);
   
+  const [timeLeft, setTimeLeft] = useState(15000);
+  
+  // Timer effect
+  useEffect(() => {
+    if ((stage === 1 && isShowingSequence) || timeLeft <= 0) return;
+    
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 100) {
+          clearInterval(interval);
+          onComplete(false);
+          return 0;
+        }
+        return prev - 100;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, [stage, isShowingSequence, onComplete, timeLeft]);
+
   // Stage 1: Simon Says
   useEffect(() => {
     if (stage === 1) {
-      const seq = Array.from({ length: 4 }, () => Math.floor(Math.random() * 4));
+      const seq = Array.from({ length: 6 }, () => Math.floor(Math.random() * 4));
       setSequence(seq);
       
       let step = 0;
@@ -52,7 +71,11 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
     
     if (newSeq.length === sequence.length) {
       // Pass stage 1
-      setTimeout(() => setStage(2), 500);
+      setIsShowingSequence(true); // Stop timer from ticking during transition
+      setTimeout(() => {
+        setStage(2);
+        setTimeLeft(20000);
+      }, 500);
     }
   };
 
@@ -71,7 +94,7 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
           if (next < 0) { next = 0; setSliderDir(1); }
           return next;
         });
-      }, 30);
+      }, 15);
       return () => clearInterval(interval);
     }
   }, [stage, sliderDir]);
@@ -91,11 +114,25 @@ export const RobberyMinigame: React.FC<RobberyMinigameProps> = ({ target, isDark
     }
   };
 
+  const formatTime = (ms: number) => {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor((ms % 1000) / 100);
+    return `${s}.${m}с`;
+  };
+
   return (
-    <div className={`w-full h-screen flex flex-col items-center justify-center p-4 font-sans ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <h2 className="text-2xl font-bold mb-8 text-center">
+    <div className={`w-full h-full flex flex-col items-center justify-start pt-12 p-4 font-sans ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-gray-100 text-gray-900'}`}>
+      <h2 className="text-2xl font-bold mb-4 text-center">
         Ограбление {target}
       </h2>
+      
+      {!isShowingSequence || stage === 2 ? (
+        <div className={`text-xl font-mono font-bold mb-6 ${timeLeft < 5000 ? 'text-red-500 animate-pulse' : 'text-gray-500'}`}>
+          ⏳ {formatTime(timeLeft)}
+        </div>
+      ) : (
+         <div className="h-13 mb-6"></div> 
+      )}
 
       <AnimatePresence mode="wait">
         {stage === 1 && (

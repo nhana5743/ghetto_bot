@@ -133,7 +133,9 @@ export default function App() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message || `Успешно`);
+        if (action !== 'rob_check') {
+          showToast(data.message || `Успешно`);
+        }
         await fetchUserData();
       } else {
         showToast(data.error || `Ошибка`);
